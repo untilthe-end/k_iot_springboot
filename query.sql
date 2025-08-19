@@ -50,3 +50,40 @@ CREATE TABLE IF NOT EXISTS `books` (
 );
 
 select * from books;
+
+
+# 0819 (D_Post & D_Comment)
+CREATE TABLE IF NOT EXISTS `posts`(
+	`id` 		bigint not null auto_increment,
+    `title` 	varchar(200) not null comment '게시글 제목',
+    `content` 	longtext not null comment '게시글 내용', # -- @Lob 매핑 대응
+    `author` 	varchar(100) not null comment '작성자 표시명 또는 ID',
+    
+    primary key(`id`),
+    key `idx_post_author` (`author`) # 저자를 기준으로 찾고싶어요. 
+    
+)   engine=InnoDb
+	DEFAULT CHARSET = utf8mb4
+    COLLATE = utf8mb4_unicode_ci
+    comment = '게시글';
+    
+-- 댓글 테이블
+CREATE TABLE IF NOT EXISTS `comments`(
+	`id` 		bigint not null auto_increment,
+    `post_id` 	bigint not null comment 'posts.id FK', # posts 테이블의 id를 참조 (외래키 설정 예정)
+    `content`	varchar(1000) not null comment '댓글 내용',
+    `commenter` varchar(100) not null comment '댓글 작성자 표시명 또는 id',
+    
+    primary key (`id`),
+    key `idx_comment_post_id` (`post_id`), -- post_id에 인덱스 설정 # 댓글 아이디로 정렬
+    key `idx_comment_commenter` (`commenter`), # 댓글 작성자로 정렬
+    constraint `fk_comment_post`
+		foreign key (`post_id`) references `posts` (`id`) on delete cascade on update cascade
+        
+) 	engine=InnoDb
+	DEFAULT CHARSET = utf8mb4
+    COLLATE = utf8mb4_unicode_ci # 대소문자 구분 안함
+    comment = '댓글'; # 테이블 자체에 대한 설명
+    
+select * from `posts`;
+select * from `comments`;
