@@ -4,6 +4,7 @@ import com.example.k5_iot_springboot.dto.D_Post.request.PostCreateRequestDto;
 import com.example.k5_iot_springboot.dto.D_Post.request.PostUpdateRequestDto;
 import com.example.k5_iot_springboot.dto.D_Post.response.PostDetailResponseDto;
 import com.example.k5_iot_springboot.dto.D_Post.response.PostListResponseDto;
+import com.example.k5_iot_springboot.dto.D_Post.response.PostWithCommentCountResponseDto;
 import com.example.k5_iot_springboot.dto.ResponseDto;
 import com.example.k5_iot_springboot.entity.D_Post;
 import com.example.k5_iot_springboot.repository.D_PostRepository;
@@ -29,11 +30,11 @@ public class D_PostServiceImpl implements D_PostService {
     public ResponseDto<PostDetailResponseDto> createPost(PostCreateRequestDto dto) {
         // dto 자체가 null인지 즉시 방어 (null인 경우 NPE 발생)
         Objects.requireNonNull(dto, "PostCreateRequestDto must not be null");
-        
+
         String title = dto.title().trim(); // 제목 양옆에 공백 제거
         String content = dto.content().trim();
         String author = dto.author().trim();
-        
+
         D_Post post = D_Post.create(title, content, author);
         D_Post saved = postRepository.save(post);
 
@@ -66,7 +67,7 @@ public class D_PostServiceImpl implements D_PostService {
         Long pid = requirePositiveId(id);
 
         D_Post post = postRepository.findByIdWithComments(pid)
-                .orElseThrow(()-> new EntityNotFoundException("해당 id의 게시글을 찾을 수 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("해당 id의 게시글을 찾을 수 없습니다."));
 
         post.changeTitle(dto.title().trim());
         post.changeContent(dto.content().trim());
@@ -80,16 +81,96 @@ public class D_PostServiceImpl implements D_PostService {
     @Transactional
     public ResponseDto<Void> deletePost(Long id) {
         D_Post post = postRepository.findById(id)
-                .orElseThrow(()-> new EntityNotFoundException("해당 id의 게시글을 찾을 수 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("해당 id의 게시글을 찾을 수 없습니다."));
 
         // orphanRemoval & cascade 설정으로 댓글은 자동 정리
         postRepository.delete(post);
         return ResponseDto.setSuccess("SUCCESS", null);
     }
 
+
+    // 6) 특정 작성자의 모든 게시글
+    @Override
+    public ResponseDto<List<PostListResponseDto>> getPostByAuthor(String author) {
+        List<D_Post> posts = postRepository.findByAuthorOrderByIdDesc(author);
+        List<PostListResponseDto> result = posts.stream()
+                .map(PostListResponseDto::from)
+                .toList();
+
+        return ResponseDto.setSuccess("SUCCESS", result);
+    }
+
+    // 7) 제목 키워드 검색
+    @Override
+    public ResponseDto<List<PostListResponseDto>> searchPostsByTitle(String keyword) {
+        List<D_Post> posts = postRepository.findByTitleContainingIgnoreCaseOrderByIdDesc(keyword);
+        List<PostListResponseDto> result = posts.stream()
+                .map(PostListResponseDto::from)
+                .toList();
+
+        return ResponseDto.setSuccess("SUCCESS", result);
+    }
+
+    // 8) 댓글이 가장 많은 상위 5개
+    @Override
+    public ResponseDto<List<PostWithCommentCountResponseDto>> getTop5PostsByComments() {
+        // var: 지역 변수 타입 추론 (Java 10+)
+        // 우항의 반환타입 추론해서 var에 편하게 담자!!
+        // 장점 - 반환 타입의 길이가 길 경우 간결한 작성
+        // 단점 - 타입을 숨겨버려 가독성 저하
+        var rows = postRepository.findTopPostsByCommentCount_Native(5);
+
+        List<PostWithCommentCountResponseDto> result = rows.stream()
+                .map(PostWithCommentCountResponseDto::from)
+                .toList();
+        return ResponseDto.setSuccess("SUCCESS", result);
+    }
+
+    // 9) 특정 키워드를 포함하는 "댓글"이 달린 게시글 조회
+    @Override
+    public ResponseDto<List<PostListResponseDto>> searchPostsByCommentKeyword(String keyword) {
+
+        // 1) 입력값 정제/검증
+        String clean = (keyword == null) ? "": keyword.trim();
+
+        if( clean.isEmpty()){
+            return ResponseDto.setFailed("검색 키워드는 비어 있을 수 없습니다.");
+        }
+
+        if (clean.length() > 100) {
+            throw new IllegalArgumentException("검색 키워드는 100자 이하여야 합니다.");
+        }
+
+        var rows = postRepository.findByCommentKeyword(clean);
+
+        List<PostListResponseDto> result = rows.stream()
+                .map(PostListResponseDto::from)
+                .toList();
+
+        return ResponseDto.setSuccess("SUCCESS", result);
+    }
+
+    // 10) 특정 작성자의 게시글 중, 댓글 수가 minCount 이상인 게시글 조회
+    @Override
+    public ResponseDto<List<PostWithCommentCountResponseDto>>
+    getAuthorPostsWithMinComments(String author, int minCount) {
+        // 입력값 검증(선택)
+        String clean = (author == null) ? "": author.trim();
+
+        // 리포지토리 호출 (네이티브 쿼리)
+        var rows = postRepository.findAuthorPostsWithMinCount(clean, 2);
+
+        // 매핑
+        List<PostWithCommentCountResponseDto> result = rows.stream()
+                .map(PostWithCommentCountResponseDto::from)
+                .toList();
+
+        return ResponseDto.setSuccess("SUCCESS", result);
+    }
+
     // === 내부 유틸 메서드 === //
     private Long requirePositiveId(Long id) {
-        if (id == null || id <= 0 ) throw new IllegalArgumentException("id는 반드시 양수여야 합니다.");
+        if (id == null || id <= 0) throw new IllegalArgumentException("id는 반드시 양수여야 합니다.");
         return id;
     }
 

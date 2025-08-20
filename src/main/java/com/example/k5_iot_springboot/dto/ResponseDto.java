@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.Instant;
-
 @Data
 @AllArgsConstructor(staticName = "set") // 모든 필드를 받는 생성자 + staticName 지정 (set 메서드 생성)
 @NoArgsConstructor
@@ -40,6 +38,15 @@ public class ResponseDto<T> {
      * */
     public static <T> ResponseDto<T> setFailed(String message) {
         return ResponseDto.set(false, message, null);
+    }
+
+    /**
+     * 요청이 실패했을 때 응답 생성
+     * @param message 실패 메시지
+     * @param data 에러 데이터
+     * */
+    public static <T> ResponseDto<T> setFailed(String message, T data) {
+        return ResponseDto.set(false, message, data);
     }
 
 }
