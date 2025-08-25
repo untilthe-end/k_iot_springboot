@@ -107,6 +107,30 @@ SELECT * FROM `boards`;
 
 #0822 
 
-    
 USE k5_iot_springboot;
+
+# 0825
+drop table if exists `users`;
+CREATE TABLE IF NOT EXISTS `users`(
+	id Bigint not null auto_increment,
+    login_id varchar(50) not null,
+    password varchar(255) not null,
+    email varchar(255) not null,
+    nickname varchar(50) not null,
+    gender varchar(10),
+    # 아래 두개는 User Entity 에 없지만 만들어줘야함. @JpaAuditing 햇으니
+    created_at datetime(6) not null,
+    updated_at datetime(6) not null,
+    primary key (id),
+    constraint `uk_users_login_id` unique (login_id),
+	constraint `uk_users_email` unique (email),
+	constraint `uk_users_nickname` unique (nickname),
+    constraint `chk_users_gender` check(gender in ('MALE', 'FEMALE'))
     
+
+) 	ENGINE=InnoDB
+	DEFAULT CHARACTER SET = utf8mb4
+    COLLATE utf8mb4_unicode_ci
+    COMMENT = '사용자';
+
+select * from `users`;
