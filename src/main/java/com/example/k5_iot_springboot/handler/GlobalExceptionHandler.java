@@ -6,6 +6,7 @@ import com.example.k5_iot_springboot.common.errors.FieldErrorItem;
 import com.example.k5_iot_springboot.dto.ResponseDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.websocket.AuthenticationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -17,6 +18,9 @@ import java.rmi.AccessException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+
+/** 웹 보안 설정(WebSecurityConfig)에서 일어나는 예외는 처리 하지 않음!!!!*/
 
 @RestControllerAdvice
 // 스프링이 빈으로 등록 - 해당 프로젝트 전역의 @RestController에서 발생하는 예외를 처리
@@ -83,6 +87,14 @@ public class GlobalExceptionHandler {
         return fail(ErrorCode.VALIDATION_ERROR, null, toFieldErrors(e));
     }
 
+    // === 401 UnAuthorized: 인증 실패 === //
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ResponseDto<Object>> handleAuth(AuthenticationException e){
+        log.warn("UnAuthorized: {}", e.getMessage());
+        return fail(ErrorCode.BAD_REQUEST, null, null);
+
+    }
+
     // === 403 Forbidden: 접근 거부 === //
     @ExceptionHandler(AccessException.class)
     public ResponseEntity<ResponseDto<Object>> handleAccessDenied(AccessDeniedException e) {
@@ -103,6 +115,8 @@ public class GlobalExceptionHandler {
         log.warn("Conflict: {}", e.getMessage());
         return fail(ErrorCode.CONFLICT, null, null);
     }
+
+
 
     // === 500 Internal Server Error: 그 밖의 모든 예외에 대한 최종 안정망 === //
     @ExceptionHandler(Exception.class)

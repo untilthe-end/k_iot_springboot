@@ -7,6 +7,7 @@ public enum ErrorCode{
     
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "BAD_REQUEST", "요청이 올바르지 않습니다."),
     VALIDATION_ERROR(HttpStatus.BAD_REQUEST, "VALIDATION_ERROR", "입력값 검증에 실패했습니다."),
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "UNAUTHORIZED", "인증이 필요합니다. 로그인 후 다시 시도해 주세요."),
     FORBIDDEN(HttpStatus.FORBIDDEN, "FORBIDDEN", "접근 권한이 없습니다."),
     NOT_FOUND(HttpStatus.NOT_FOUND, "NOT_FOUND", "요청하신 자원을 찾을 수 없습니다."),
     CONFLICT(HttpStatus.CONFLICT, "CONFLICT", "요청이 서버 상태와 충돌합니다."),
