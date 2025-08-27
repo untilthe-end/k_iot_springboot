@@ -1,6 +1,7 @@
 package com.example.k5_iot_springboot.entity;
 
 import com.example.k5_iot_springboot.common.enums.Gender;
+import com.example.k5_iot_springboot.common.enums.RoleType;
 import com.example.k5_iot_springboot.entity.base.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -9,6 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * User 엔티티
@@ -32,7 +35,8 @@ import java.time.LocalDateTime;
 public class G_User extends BaseTimeEntity {
 
     /** PK: 고유 번호 */
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", updatable = false)
     private Long id;
 
@@ -53,10 +57,23 @@ public class G_User extends BaseTimeEntity {
     @Column(name = "nickname", nullable = false, length = 50)
     private String nickname;
 
-    /** 성별 (선택, NULL 허용 */
+    /** 성별 (선택, NULL 허용) */
     @Enumerated(EnumType.STRING)
     @Column(name = "gender", length = 20)
     private Gender gender;
+
+    /**
+     * 여러 권한 보유 (N:M 관계)
+     */
+    @ElementCollection(fetch = FetchType.LAZY)      // JWT에 roles를 저장하는 구조 - LAZY 가능
+    @CollectionTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "fk_user_roles_user"))
+            , uniqueConstraints = @UniqueConstraint(name = "uk_user_roles", columnNames = {"user_id", "role"})
+    )
+    @Column(name = "role", length = 30, nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Set<RoleType> roles = new HashSet<>();
 
     /** 생성 편의 메서드 */
     @Builder
@@ -66,6 +83,7 @@ public class G_User extends BaseTimeEntity {
         this.email = email;
         this.nickname = nickname;
         this.gender = gender;
+        this.roles = (roles == null || roles.isEmpty())? new HashSet<>(Set.of(RoleType.USER)) : roles;
     }
 
     // === 변경(수정) 메서드 === //
@@ -76,6 +94,14 @@ public class G_User extends BaseTimeEntity {
     public void changeProfile(String nickname, Gender gender) {
         this.nickname = nickname;
         this.gender = gender;
+    }
+
+    public void addRole(RoleType role) {
+        this.roles.add(role);
+    }
+
+    public void removeRole(RoleType role) {
+        this.roles.remove(role);
     }
 
     @Override

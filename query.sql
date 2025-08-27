@@ -110,6 +110,8 @@ SELECT * FROM `boards`;
 USE k5_iot_springboot;
 
 # 0825
+-- 사용자 테이블
+
 drop table if exists `users`;
 CREATE TABLE IF NOT EXISTS `users`(
 	id Bigint not null auto_increment,
@@ -118,7 +120,7 @@ CREATE TABLE IF NOT EXISTS `users`(
     email varchar(255) not null,
     nickname varchar(50) not null,
     gender varchar(10),
-    # 아래 두개는 User Entity 에 없지만 만들어줘야함. @JpaAuditing 햇으니
+    # 아래 두개는 User Entity 에 없지만 만들어줘야함. @JpaAuditing 했으니
     created_at datetime(6) not null,
     updated_at datetime(6) not null,
     primary key (id),
@@ -133,4 +135,35 @@ CREATE TABLE IF NOT EXISTS `users`(
     COLLATE utf8mb4_unicode_ci
     COMMENT = '사용자';
 
+# 0827 (G_User_role)
+-- 사용자 권한 테이블
+
+drop table if exists `user_roles`;
+CREATE TABLE IF NOT EXISTS `user_roles`(
+	user_id BIGINT NOT NULL,
+    role varchar(30) not null,
+    
+    constraint fk_user_roles_user
+		foreign key (user_id) references `users`(id) on delete cascade,
+        
+	constraint uk_user_roles unique (user_id, role),
+    
+    constraint chk_user_roles_role check (role in ('USER','MANAGER','ADMIN'))
+
+) 	ENGINE=InnoDB
+	DEFAULT CHARACTER SET = utf8mb4
+    COLLATE utf8mb4_unicode_ci
+    COMMENT = '사용자 권한';
+
+SELECT * FROM `user_roles`;
+
+# 회원가입은 여기서 못해!! 비밀번호 암호화처리를 했기때문에 ~
+# 관리자 권한 부여 Sample Data #　
+INSERT INTO user_roles (user_id, role)
+values (1, "ADMIN"); 
+
 select * from `users`;
+
+
+
+
