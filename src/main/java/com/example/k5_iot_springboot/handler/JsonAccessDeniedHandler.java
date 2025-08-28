@@ -16,6 +16,8 @@ import java.nio.charset.StandardCharsets;
 
 // 403 전용 AccessDeniedHandler
 
+/** WebSecurityConfig 에서 일어나는 예외처리 여기서 함 */
+
 @Component // 다른 클래스에서 주입받으려면 @Component 애노테이션 해야됨
 public class JsonAccessDeniedHandler implements AccessDeniedHandler {
     @Override
@@ -25,6 +27,8 @@ public class JsonAccessDeniedHandler implements AccessDeniedHandler {
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding(StandardCharsets.UTF_8.name()); // "쌍따옴표 안에 String 넣으려면 \" 추가
-        response.getWriter().write("{\"result\":\"fail\",\"message\":\"접근 권한이 없습니다.\" }");
+        response.getWriter().write("{\"result\":\"fail\",\"message\":\"접근 권한이 없지롱~\" }");
+
+        // 위 메세지는 Postman 에서 '권한추가' 할때 일반 'USER' 토큰 넣고하면 뜨는 메세지
     }
 }

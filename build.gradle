@@ -10,7 +10,7 @@ plugins {
 
 	// 스프링부트 의존성 버전 관리를 위임
 	id 'io.spring.dependency-management' version '1.1.7'
-    id 'org.jetbrains.kotlin.jvm'
+    //id 'org.jetbrains.kotlin.jvm'
 }
 
 group = 'com.example' // Maven 그룹 ID (프로젝트 패키지)

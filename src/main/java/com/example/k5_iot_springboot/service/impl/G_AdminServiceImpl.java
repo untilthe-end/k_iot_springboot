@@ -3,8 +3,6 @@ package com.example.k5_iot_springboot.service.impl;
 import com.example.k5_iot_springboot.common.enums.RoleType;
 import com.example.k5_iot_springboot.dto.G_Admin.request.RoleManageRequest;
 import com.example.k5_iot_springboot.dto.G_Admin.response.RoleManageResponse;
-import com.example.k5_iot_springboot.dto.G_Auth.response.SignInResponse;
-import com.example.k5_iot_springboot.dto.G_Admin.request.RoleModifyRequest;
 import com.example.k5_iot_springboot.dto.ResponseDto;
 import com.example.k5_iot_springboot.entity.G_User;
 import com.example.k5_iot_springboot.repository.G_UserRepository;
@@ -17,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

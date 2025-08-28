@@ -155,15 +155,36 @@ CREATE TABLE IF NOT EXISTS `user_roles`(
     COLLATE utf8mb4_unicode_ci
     COMMENT = '사용자 권한';
 
-SELECT * FROM `user_roles`;
+
 
 # 회원가입은 여기서 못해!! 비밀번호 암호화처리를 했기때문에 ~
 # 관리자 권한 부여 Sample Data #　
 INSERT INTO user_roles (user_id, role)
 values (1, "ADMIN"); 
 
+SELECT * FROM `user_roles`;
 select * from `users`;
 
+# 0828 (H_Article)
+-- 기사 테이블 
+USE k5_iot_springboot;
 
-
-
+drop table if exists `articles`;
+CREATE TABLE IF NOT EXISTS `articles`(
+	id BIGINT auto_increment,
+    title varchar(200) not null,
+    content LONGTEXT NOT NULL,
+    author_id bigint not null,
+    created_at datetime(6) not null,
+    updated_at datetime(6) not null,
+    primary key (id),
+    constraint fk_articles_author
+		foreign key (author_id) references `users`(id)
+        on delete cascade
+  
+) 	ENGINE=InnoDB
+	DEFAULT CHARACTER SET = utf8mb4
+    COLLATE utf8mb4_unicode_ci
+    COMMENT = '기사글';
+    
+SELECT * FROM `articles`;

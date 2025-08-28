@@ -10,3 +10,5 @@ public record SignInResponse (
         Set<String> roles       // ["ROLE_USER"]
 ){
 }
+
+// 불변 final / getter / toString / 생성자 자동 생성

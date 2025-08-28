@@ -96,7 +96,7 @@ public class GlobalExceptionHandler {
     }
 
     // === 403 Forbidden: 접근 거부 === //
-    @ExceptionHandler(AccessException.class)
+    @ExceptionHandler({AccessException.class, AccessDeniedException.class}) // 중괄호로 해야함.
     public ResponseEntity<ResponseDto<Object>> handleAccessDenied(AccessDeniedException e) {
         log.warn("AccessDenied: {}", e.getMessage());
         return fail(ErrorCode.FORBIDDEN, null, null);

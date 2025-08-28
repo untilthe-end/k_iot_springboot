@@ -1,0 +1,23 @@
+/*
+    @PostMapping("/sign-in")
+    public ResponseEntity<ResponseDto<SignInResponse>> signIn(@Valid @RequestBody SignInRequest req) {
+        ResponseDto<SignInResponse> response = authService.signIn(req);
+        return ResponseEntity.ok().body(response);
+    }
+
+    ResponseEntity
+    : 응답 본문(body) + HTTP 상태 코드(status) + 헤더(headers)
+    -> 위에 ResponseEntity.ok().body(response) 는 200 OK + body만 줌 -> 헤더는 없음.
+
+    ResponseDto
+    : API 응답을 항상 같은 틀(success, message, data)로 묶어서 반환하기 위한 클래스
+*/
+
+/*
+     Set<String> roles = auth.getAuthorities().stream()
+             .map(GrantedAuthority::getAuthority)
+             .collect(Collectors.toSet());
+
+     컬렉션 -> Stream -> 필요한 연산 -> 다시 컬렉션
+
+*/

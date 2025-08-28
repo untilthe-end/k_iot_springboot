@@ -33,3 +33,9 @@ public class G_AuthController {
         return ResponseEntity.ok().body(response);
     }
 }
+
+/*
+    ResponseEntity
+    : 응답 본문(body) + HTTP 상태 코드(status) + 헤더(headers)
+    -> 위에 ResponseEntity.ok().body(response) 는 200 OK + body만 줌 -> 헤더는 없음.
+ */

@@ -103,7 +103,7 @@ public class WebSecurityConfig {
         List<String> origins = splitToList(allowedOrigins);
 
         config.setAllowCredentials(true);                      // 1) 인증 정보(쿠키/Authorization) 허용
-//        config.setAllowedOriginPatterns(origins);              // 2) Origin 설정 - 도메인 매칭  | 반드시 써야하지만 =* 했기 때문에 (배포시 사용)
+//        config.setAllowedOriginPatterns(origins);            // 2) Origin 설정 - 도메인 매칭  | 반드시 써야하지만 =* 했기 때문에 (배포시 사용)
         //          >> 허용 origin을 *로 둘 수 없음 (반드시 구체적인 도메인이어야 함)
         config.setAllowedHeaders(splitToList(allowedHeaders)); // 3) 요청 헤더 화이트 리스트
         config.setAllowedMethods(splitToList(allowedMethod));  // 4) 허용 메서드
@@ -168,6 +168,7 @@ public class WebSecurityConfig {
                             // === URL 레벨에서 1차 차단 (+ 컨트롤러 메서드에서 @PreAuthorize로 2차 방어) === //
                             // 인증/회원가입 등 공개 엔드포인트 - 토큰이 필요없는 기능
                             .requestMatchers("/api/v1/auth/**").permitAll()
+                            .requestMatchers("/api/v1/articles/**").permitAll()
 
                             // 마이페이지(내 정보) - 인증 필요 (모든 역할 가능)
                             .requestMatchers("/api/v1/users/me/**").authenticated() // 인증이 필요하다 keyword
@@ -177,6 +178,9 @@ public class WebSecurityConfig {
                             .requestMatchers(HttpMethod.POST,     "/api/v1/boards/**").hasAnyRole("MANAGER", "ADMIN")
                             .requestMatchers(HttpMethod.PUT,      "/api/v1/boards/**").hasAnyRole("MANAGER", "ADMIN")
                             .requestMatchers(HttpMethod.DELETE,   "/api/v1/boards/**").hasAnyRole("ADMIN")
+
+                            // articles 접근 제어
+                            .requestMatchers(HttpMethod.GET, "/api/v1/articles/**").permitAll()
 
                             // ADMIN 전용 권용 관리 API
                             .requestMatchers("/api/v1/admin/**").hasAnyRole("ADMIN")
@@ -193,9 +197,9 @@ public class WebSecurityConfig {
 
     // 문자열(콤마 구분)을 리스트로 변환
     private static List<String> splitToList(String csv) {
-        return Arrays.stream(csv.split(","))
-                .map(String::trim)
-                .filter(s -> !s.isBlank())
-                .toList();
+        return Arrays.stream(csv.split(","))    // ["사과", " 바나나", " 배", " "]
+                .map(String::trim)                    // ["사과", "바나나", "배", ""]
+                .filter(s -> !s.isBlank())      // ["사과", "바나나", "배"]
+                .toList();                            // List.of("사과", "바나나", "배")
     }
 }

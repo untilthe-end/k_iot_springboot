@@ -1,0 +1,8 @@
+1) record class?
+: 불변 객체 | final | 주로 request / response DTO 데이터 전달 객체에 씀
+: 생성자 / getter, toString, equals, hashCode 자동 생성
+
+2) record 변수명()
+.loginId() 는 SignUpRequest는 record 라서 변수 뒤에 ()붙이면 getter 됨.
+
+3) Claims?

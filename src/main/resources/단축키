@@ -1,0 +1,13 @@
+== Introduce Variable ==
+: 반환객체에 맞는 타입과 변수 자동으로 써주는 것
+: CTRL + ALT + V
+ResponseDto<SignInResponse> signInResponseResponseDto = authService.signIn(req);
+
+== Go to Implementation ==
+ResponseDto<SignInResponse> signInResponseResponseDto = authService.signIn(req);
+
+: CTRL + ALT + B
+: .sign(req) 에 커서두고 하면 interface 구현한 ServiceImpl 코드로 바로 넘어감
+
+: CTRL + B
+: 메서드 구현한 클래스로 바로감
