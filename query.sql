@@ -167,7 +167,7 @@ select * from `users`;
 
 # 0828 (H_Article)
 -- 기사 테이블 
-USE k5_iot_springboot;
+
 
 drop table if exists `articles`;
 CREATE TABLE IF NOT EXISTS `articles`(
@@ -188,3 +188,143 @@ CREATE TABLE IF NOT EXISTS `articles`(
     COMMENT = '기사글';
     
 SELECT * FROM `articles`;
+
+-- 0901 (주문 관리 시스템)
+-- 트랜잭션, 트리거, 인덱스, 뷰 학습
+# products(상품), stocks(재고)
+# , orders(주문 정보), order_items(주문 상세 정보), order_logs(주문 기록 정보)
+
+-- 안전 실행: 삭제 순서
+# cf) FOREIGN_KEY_CHECKS: 외래 키 제약 조건을 활성화(1)하거나 비활성화(0)하는 명령어
+SET FOREIGN_KEY_CHECKS = 0;			-- 외래 키 제약 조건 검사 OFF
+DROP TABLE IF EXISTS order_logs;
+DROP TABLE IF EXISTS order_items;
+DROP TABLE IF EXISTS orders;
+DROP TABLE IF EXISTS stocks;
+DROP TABLE IF EXISTS products;
+SET FOREIGN_KEY_CHECKS = 1 ;		-- 외래 키 제약 조건 검사 ON
+
+-- 상품 정보 테이블
+CREATE TABLE IF NOT EXISTS `products` (
+	id			BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name 		VARCHAR(100) NOT NULL,
+    price		INT NOT NULL, 
+    created_at	DATETIME(6) NOT NULL,
+    updated_at	DATETIME(6) NOT NULL,
+    
+    CONSTRAINT uq_products_name UNIQUE (name),	-- 제품명: 중복될 수 없음.
+    # uq_products_name은 제약 조건의 이름(식별자)
+    # 나중에 ALTER TABLE DROP CONSTRAINT uq_products_name; 같이 제약조건을 관리하기 쉬워집니다.
+    
+    # idx_product_name
+    # name 컬럼에 인덱스를 생성합니다.
+	# 인덱스가 있으면 WHERE name = '콜라' 같은 검색 속도가 빨라져요.
+	# idx_products_name 은 인덱스의 이름입니다.
+    
+    INDEX idx_product_name (name)			# 제품명으로 제품 조회 시 성능 향상 (검색 최적화)
+)	ENGINE=InnoDB							# MySQL에서 테이블이 데이터를 저장하고 관리하는 방식을 지정
+    default CHARSET = utf8mb4				# DB나 테이블의 기본 문자 집합 (4바이트까지 지원 -emoji 포함)
+    COLLATE = utf8mb4_unicode_ci			# 정렬 순서 지정 (대소문자 구분 없이 문자열 비교 정렬)
+    COMMENT = '상품 정보';
+    
+
+# cf) ENGINE=InnoDB: 트랜잭션 지원(ACID), 외래 키 제약조건 지원(참조 무결성 보장)
+
+CREATE TABLE IF NOT EXISTS `stocks` (
+	id			BIGINT AUTO_INCREMENT PRIMARY KEY,
+    product_id 	BIGINT NOT NULL,
+    quantity 	INT NOT NULL,
+    created_at	DATETIME(6) NOT NULL,
+    updated_at 	DATETIME(6) NOT NULL,
+    
+			# stocks_product 테이블을 FK로 연결
+    CONSTRAINT fk_stocks_product
+		FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+	CONSTRAINT chk_stocks_qty CHECK (quantity >= 0),		# CHECK 조약 조건
+    INDEX idx_stocks_product_id (product_id)				# INDEX 제약  조건 
+    
+) 	ENGINE = InnoDB
+	DEFAULT CHARSET = utf8mb4
+    COLLATE = utf8mb4_unicode_ci
+    COMMENT = "상품 재고 정보";
+    
+CREATE TABLE IF NOT EXISTS `orders` (
+	id 				BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id			BIGINT NOT NULL,
+    order_status	VARCHAR(50) NOT NULL NOT NULL DEFAULT 'PENDING',
+	created_at		DATETIME(6) NOT NULL,
+    updated_at 		DATETIME(6) NOT NULL,
+    
+    CONSTRAINT fk_orders_user
+		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+	CONSTRAINT  chk_orders_os CHECK (order_status IN ('PENDING', 'APPROVED', 'CANCELLED')),
+    INDEX idx_orders_user (user_id),
+    INDEX idx_orders_status (order_status),
+    INDEX idx_orders_created_at (created_at)
+
+) 	ENGINE = InnoDB
+	DEFAULT CHARSET = utf8mb4
+    COLLATE = utf8mb4_unicode_ci
+    COMMENT = "주문 정보";
+    
+CREATE TABLE IF NOT EXISTS `order_items` (
+	id			BIGINT AUTO_INCREMENT PRIMARY KEY,
+    order_id  	BIGINT NOT NULL,					# 주문 정보
+    product_id 	BIGINT NOT NULL,				# 제품 정보
+    quantity	INT NOT NULL,
+ 	created_at	DATETIME(6) NOT NULL,
+    updated_at 	DATETIME(6) NOT NULL,
+    
+    CONSTRAINT fk_order_items_order
+		FOREIGN KEY (order_id) REFERENCES orders (id) ON DELETE CASCADE,
+	CONSTRAINT fk_order_items_product
+		FOREIGN KEY (product_id) REFERENCES products (id) ON DELETE CASCADE,
+	CONSTRAINT chk_order_items_qty CHECK (quantity > 0),			# CHECK 제약 조건
+    INDEX idx_order_items_order (order_id),
+    INDEX idx_order_items_product (product_id),
+    UNIQUE KEY uq_order_product (order_id, product_id)				# 주문 정보, 제품아이디 
+        
+) 	ENGINE = InnoDB
+	DEFAULT CHARSET = utf8mb4
+    COLLATE = utf8mb4_unicode_ci
+    COMMENT = "주문 상세 정보";
+    
+CREATE TABLE IF NOT EXISTS `order_logs` (
+	id			BIGINT AUTO_INCREMENT PRIMARY KEY,
+    order_id	BIGINT NOT NULL,
+    message 	VARCHAR(255),
+    -- 트리거가 직접 INSERT 하는 로그 테이블은 시간 누락 방지를 위해 db 기본값 유지
+	created_at	DATETIME(6) NOT NULL DEFAULT current_timestamp(6),
+    updated_at 	DATETIME(6) NOT NULL DEFAULT current_timestamp(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    CONSTRAINT fk_order_logs_order
+		FOREIGN KEY (order_id) references orders(id) ON DELETE CASCADE,
+	INDEX idx_order_logs_order (order_id), 			-- 주문 기록으로 조회
+    INDEX idx_order_logs_created_at (created_at) 	-- 날짜 기준으로 조회
+
+) 	ENGINE = InnoDB
+	DEFAULT CHARSET = utf8mb4
+    COLLATE = utf8mb4_unicode_ci
+    COMMENT = "주문 기록 정보";
+
+#### 초기 데이터 설정 ####
+INSERT INTO products (name, price, created_at, updated_at)
+VALUES
+	('갤럭시 z플립7', 50000, NOW(6), NOW(6)),
+	('아이폰 16', 60000, NOW(6), NOW(6)),
+	('갤럭시 S25 울트라', 55000, NOW(6), NOW(6)),
+	('맥북 프로 14', 80000, NOW(6), NOW(6));
+
+INSERT INTO stocks (product_id, quantity, created_at, updated_at)
+VALUES
+	(1, 50, NOW(6), NOW(6)),
+	(2, 30, NOW(6), NOW(6)),
+	(3, 70, NOW(6), NOW(6)),
+	(4, 20, NOW(6), NOW(6));
+    
+SELECT * FROM `products`;
+SELECT * FROM `stocks`;
+SELECT * FROM `orders`;
+SELECT * FROM `order_items`;
+SELECT * FROM `order_logs`;
+
+USE k5_iot_springboot;
