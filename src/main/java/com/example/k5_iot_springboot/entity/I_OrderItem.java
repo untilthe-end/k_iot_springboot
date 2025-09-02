@@ -8,6 +8,10 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/*
+    w주문 아이템
+ */
+
 @Entity
 @Table(
         name = "order_items",

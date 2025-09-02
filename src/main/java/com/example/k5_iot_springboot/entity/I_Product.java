@@ -35,6 +35,14 @@ public class I_Product extends BaseTimeEntity {
         this.name = name;
         this.price = price;
     }
+
+    public void setName(String name){
+        this.name = name;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
 }
 
 /*
@@ -43,4 +51,7 @@ public class I_Product extends BaseTimeEntity {
 👉  둘 다 쓰는 이유는:
     애플리케이션 단에서 유효성 검사 (빠르게 피드백)
     혹시라도 검증이 누락되더라도 DB에서 최후 방어막
+
+
+    @Setter 안쓰고 setName하는 이유? id값도 set안되게 하려고
  */

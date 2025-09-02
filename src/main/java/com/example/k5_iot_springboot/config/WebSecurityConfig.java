@@ -185,6 +185,16 @@ public class WebSecurityConfig {
                             // ADMIN 전용 권용 관리 API
                             .requestMatchers("/api/v1/admin/**").hasAnyRole("ADMIN")
 
+                            // products 접근 제어
+                            .requestMatchers(HttpMethod.GET,    "/api/v1/products/**").permitAll()      // 이거 안넣으면 제품 조회시에도 토큰 필요하다고 함.
+                            .requestMatchers(HttpMethod.POST,     "/api/v1/products/**").hasRole("ADMIN")
+                            .requestMatchers(HttpMethod.PUT,     "/api/v1/products/**").hasRole("ADMIN")
+
+                            // stocks 접근 제어
+                            .requestMatchers(HttpMethod.GET,    "/api/v1/stocks/**").permitAll()      // 이거 안넣으면 제품 조회시에도 토큰 필요하다고 함.
+                            .requestMatchers(HttpMethod.POST,     "/api/v1/products/**").hasAnyRole("ADMIN", "MANAGER")
+                            .requestMatchers(HttpMethod.PUT,     "/api/v1/products/**").hasAnyRole("ADMIN", "MANAGER")
+
                             // 읽기 공개 예시 (게시글 목록, 조회 등)
                             .anyRequest().authenticated(); // 나머지는 인증 필요 - JWT 토큰이 있어야 접근 가능
                     }
