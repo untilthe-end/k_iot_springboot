@@ -77,6 +77,10 @@ public class I_ProductServiceImpl implements I_ProductService {
         boolean nameChanged = req.name() != null && !Objects.equals(product.getName(), req.name());
         boolean priceChanged = req.price() != null && !Objects.equals(product.getName(), req.name());
 
+        if (!nameChanged && !priceChanged) {
+            throw new IllegalArgumentException("변경된 데이터가 없습니다.");
+        }
+
         if (nameChanged) product.setName(req.name());
         if (priceChanged) product.setPrice(req.price());
 
