@@ -22,6 +22,6 @@ public class OrderResponse {
             String productName,
             Integer price,
             Integer quantity,
-            Integer lineTotal   // 주문항목이 몇개인지
+            Integer lineTotal   // 라인당 주문이 price * quantity = 얼마인지
     ) {}
 }

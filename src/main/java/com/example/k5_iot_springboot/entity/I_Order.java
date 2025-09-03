@@ -18,28 +18,25 @@ import java.util.List;
         indexes = {
                 @Index(name = "idx_orders_user", columnList = "user_id"),
                 @Index(name = "idx_orders_status", columnList = "order_status"),
-                @Index(name = "idx_orders_created_at", columnList = "created_at"),
+                @Index(name = "idx_orders_created_at", columnList = "created_at")
         }
 )
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class I_Order extends BaseTimeEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull                                                // null 만 아니면 되고, "" 빈 문자열가능
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)    // optional = false ? 연관된 테이블이 있어야함.
-    // 유저 1명당 주문 많이 가능 1:N
-    // 현재 테이블(order)을 기준이니 @ManyToOne
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY, optional = false) // Many(Order)ToOne(G_User)
     @JoinColumn(name = "user_id", nullable = false,
             foreignKey = @ForeignKey(name = "fk_orders_user"))
     private G_User user;
 
-    // 자바 Enum은 DB에서 Varchar + check 제약조건 사용
+    // 자바 Enum 타입은 DB에서 VARCHAR + CHECK 제약조건 사용
     @Enumerated(EnumType.STRING)
     @Column(name = "order_status", nullable = false, length = 16)
-    private OrderStatus orderstatus = OrderStatus.PENDING;
+    private OrderStatus orderStatus = OrderStatus.PENDING;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     // I_Order (주문) 엔티티와 I_OrderItem (주문 상세) 엔티티 간 1:N 관계를 명시
@@ -47,7 +44,7 @@ public class I_Order extends BaseTimeEntity {
     //              >> "order"는 I_OrderItem의 order 필드명을 가리킴!
     // - cascade = CascadeType.ALL
     //      : 영속성 전이를 의미 (Order 저장/삭제 시 OrderItem도 같이 저장/삭제)
-    // - orphanRemoval = true
+    // - orPhanRemoval = true
     //      : 고아 객체 제거 기능
     //      >> items 리스트에서 요소 제거 시, 해당 요소의 DB에서 OrderItem 레코드가 삭제됨
     // @Builder.Default
@@ -56,8 +53,7 @@ public class I_Order extends BaseTimeEntity {
     @Builder
     public I_Order(@NotNull G_User user, OrderStatus orderStatus) {
         this.user = user;
-        // 주문 정보가 없지 않다면 주문 상태 : 아니면 PENDING
-        this.orderstatus = (orderStatus != null) ? orderStatus : OrderStatus.PENDING;
+        this.orderStatus = (orderStatus != null) ? orderStatus : OrderStatus.PENDING;
     }
 
     public void addItem(I_OrderItem item) {
@@ -69,8 +65,11 @@ public class I_Order extends BaseTimeEntity {
         items.remove(item);
         item.setOrder(null);
     }
-}
 
+    public void setOrderStatus(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+}
 /*
     @ManyToOne - FK 지정하는 테이블에서 사용
 

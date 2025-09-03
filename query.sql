@@ -311,6 +311,7 @@ CREATE TABLE IF NOT EXISTS `order_logs` (
     COMMENT = "주문 기록 정보";
 
 #### 초기 데이터 설정 ####
+
 INSERT INTO products (name, price, created_at, updated_at)
 VALUES
 	('갤럭시 z플립7', 50000, NOW(6), NOW(6)),

@@ -4,9 +4,7 @@ import com.example.k5_iot_springboot.entity.base.BaseTimeEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 /*
     w주문 아이템
@@ -22,6 +20,7 @@ import lombok.NoArgsConstructor;
         uniqueConstraints = {@UniqueConstraint(name = "uq_order_product", columnNames = {"order_id", "product_id"})}
 )
 @Getter
+
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class I_OrderItem extends BaseTimeEntity {
     @Id
@@ -44,6 +43,11 @@ public class I_OrderItem extends BaseTimeEntity {
     @Column(nullable = false)
     private int quantity;
 
+    @Builder
+    public I_OrderItem(I_Product product, int quantity) {
+        this.product = product;
+        this.quantity = quantity;
+    }
     void setOrder(I_Order order) {
         this.order = order;
     }
