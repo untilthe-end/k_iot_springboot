@@ -1,0 +1,13 @@
+[브랜치명 수정 방법]
+git branch -m old-branch new-branch
+: git branch -m -develop develop
+
+---------------------------------------------
+[새 브랜치 push]
+git push origin new-branch
+: git push origin develop
+
+---------------------------------------------
+[기존 브랜치 삭제]
+git push origin --delete old-branch
+: git push origin --delete -develop

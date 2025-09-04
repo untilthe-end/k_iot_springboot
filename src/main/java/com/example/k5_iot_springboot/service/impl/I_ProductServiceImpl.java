@@ -1,7 +1,5 @@
 package com.example.k5_iot_springboot.service.impl;
 
-import com.example.k5_iot_springboot.dto.C_Book.BookResponseDto;
-import com.example.k5_iot_springboot.dto.D_Post.response.PostListResponseDto;
 import com.example.k5_iot_springboot.dto.I_Order.request.ProductRequest;
 import com.example.k5_iot_springboot.dto.I_Order.response.ProductResponse;
 import com.example.k5_iot_springboot.dto.ResponseDto;
@@ -18,9 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,13 +26,12 @@ public class I_ProductServiceImpl implements I_ProductService {
     private final I_ProductRepository productRepository;
     private final I_StockRepository stockRepository;
 
-
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     public ResponseDto<ProductResponse.DetailResponse> create(
             UserPrincipal userPrincipal,
-            ProductRequest.@Valid Create req) {
+            @Valid ProductRequest.Create req) {
         ProductResponse.DetailResponse data = null;
 
         I_Product product = I_Product.builder()

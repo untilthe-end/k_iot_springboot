@@ -1,0 +1,10 @@
+프로젝트
+상태(TODO/IN_PROGRESS/DONE) 변경 
+enum 
+
+check
+
+
+옵션알림
+
+@Validation 다해

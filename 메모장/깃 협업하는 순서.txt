@@ -1,0 +1,57 @@
+ㄴ git branch -d branch이름 				>> 브랜치 삭제 
+ㄴ git checkout -b localbranch이름 		>> 브랜치 생성 후 자동 이동
+ㄴ git push --set-upstream origin 브랜치명	
+ㄴ git push -u origin 브랜치명
+
+# --set-upstream
+: 현재 로컬 브랜치를 특정 원격 저장소와 연결하여 push/pull 명령어를 기본적으로 수행할지 설정하는 역할
+
+origin
+: 기본 원격 저장소 이름 (git push/git pull) 만으로도 가능
+-------------------------------------------------------------------
+Q) git bash 열어서 pull 무조건 먼저하면안됨?
+ㄴ그렇게 하면 내꺼가 다 날라가!
+
+ㄴ git status 
+ㄴ git add .
+ㄴ git commit -m "modified" 	>> 내꺼 로컬에 저장 시켜놓고 (커밋!)
+ㄴ git push 				>> 충돌남			
+ㄴ git pull 				>> 최신꺼 받아오고
+ㄴ git push 				>> 다시 원격에 업로드
+
+bash 에서
+branch1 이나 main branch냐 에 따라서 같은 .txt 파일도 내용이 다르게 열린다. 
+
+ㄴ git checkout branch1 		>> branch1 로 바꿔줘
+ㄴ git merge main			>> main 코드랑 합병~
+
+branch1 -> main pull request 오류
+오류는 원격에서 만나고 main -> branch1 로 가져와야함.
+
+-------------------------------------------------------------------
+개인 브랜치 작업
+- add / commit / push
+
+원격 리포지토리 PR 작성
+- 충돌 시
+
+로컬 환경에서 main 브랜치로 이동
+>> git checkout main [git checkout 브랜치명]
+
+main 최신화
+>> git pull
+
+합병할 브랜치로 이동
+>> git checkout branch1
+
+main 코드를 합병
+>> git merge main
+
+[[[코드 오류 수정]]]
+
+- add / commit / push
+
+
+--------------------------------------------------------------------
+Lock branch 하면 로컬에서 push 할수없고 
+Git에서 하위 branch 에서 pull request로만 할수있어. 그런데 2명이상

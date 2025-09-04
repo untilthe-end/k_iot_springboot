@@ -1,0 +1,4 @@
+brance 에 push하고 main 에 pull request하면 delete branch 해야됨
+
+git 원격에 auth branch 삭제했으면
+cmd에서도 local에서 auth branch 삭제해야됨.
