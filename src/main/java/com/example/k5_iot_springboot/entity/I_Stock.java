@@ -52,4 +52,4 @@ public class I_Stock extends BaseTimeEntity {
 
     JPA는 Java Persistence API 의 약자예요.
     : 스프링과 직접적인 관계는 없고, 자바에서 DB를 다루기 위한 표준 인터페이스(API) 에요.
- */
+ */              
