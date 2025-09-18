@@ -44,6 +44,9 @@ dependencies {
 	// - 데이터 유효성 검사를 위한 의존성 추가
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+	// Spring Web 이메일 기능 구현 스타터
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
 	// Spring Web Security 스타터
 	// - 보안 처리를 위한 의존성 추가
 	implementation 'org.springframework.boot:spring-boot-starter-security'

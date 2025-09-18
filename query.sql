@@ -180,6 +180,7 @@ INSERT INTO user_roles (user_id, role_name) VALUES
     ON DUPLICATE KEY UPDATE role_name = VALUES(role_name);
 
 SELECT * FROM `users`;
+
 SELECT * FROM `user_roles`;
 
 #### 사용하지 않음 #########################################################
@@ -208,8 +209,8 @@ SELECT * FROM `user_roles`;
 
 # 회원가입은 여기서 못해!! 비밀번호 암호화처리를 했기때문에 ~
 # 관리자 권한 부여 Sample Data #　
-INSERT INTO user_roles (user_id, role)
-values (1, "ADMIN"); 
+INSERT INTO user_roles (user_id, role_name)
+values (6, "ADMIN"); 
 
 SELECT * FROM `user_roles`;
 select * from `users`;
