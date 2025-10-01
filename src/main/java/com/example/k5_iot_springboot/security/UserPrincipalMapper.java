@@ -48,7 +48,7 @@ public class UserPrincipalMapper {
                         ? List.of(new SimpleGrantedAuthority("ROLE_USER"))
                         : user.getUserRoles().stream()
                         .map(r -> {
-                            String name = r.getRole().toString();
+                            String name = r.getRole().getName().name();
                             String role = name.startsWith("ROLE_") ? name : "ROLE_" + name;
                             return new SimpleGrantedAuthority(role);
                         })
