@@ -238,6 +238,14 @@ CREATE TABLE IF NOT EXISTS `articles`(
     COMMENT = '기사글';
     
 SELECT * FROM `articles`;
+INSERT INTO articles (title, content, author_id, created_at, updated_at)
+VALUES
+('기사1', '내용1', 1, NOW(6), NOW(6)),
+('기사2', '내용2', 2, NOW(6), NOW(6)),
+('기사3', '내용3', 1, NOW(6), NOW(6)),
+('기사4', '내용4', 3, NOW(6), NOW(6)),
+('기사5', '내용5', 1, NOW(6), NOW(6)),
+('기사6', '내용6', 3, NOW(6), NOW(6));
 
 -- 0901 (주문 관리 시스템)
 -- 트랜잭션, 트리거, 인덱스, 뷰 학습

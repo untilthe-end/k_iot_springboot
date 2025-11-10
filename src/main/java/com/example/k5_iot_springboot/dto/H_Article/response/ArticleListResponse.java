@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 public record ArticleListResponse(
         Long id,
-        String content,
+        String title,
         String authorLoginId,
         LocalDateTime createdAt
 ) {
