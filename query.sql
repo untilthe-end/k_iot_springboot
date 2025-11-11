@@ -456,8 +456,19 @@ SELECT * FROM `order_items`;
 SELECT * FROM `order_logs`;
 
 
+CREATE TABLE `refresh_tokens` (
+	id BIGINT PRIMARY KEY NOT NULL auto_increment,
+    username varchar(100) NOT NULL,
+    token varchar(512) not null,
+    expiry bigint not null,
+    unique key `uk_refresh_username` (username),
+    unique key `uk_refresh_token` (token)
+    
+)  	ENGINE = InnoDB
+	DEFAULT CHARSET = utf8mb4
+    COLLATE = utf8mb4_unicode_ci
+    COMMENT = "JWT Refresh Token 저장 테이블";
 
-
-
+select * from refresh_tokens;
 
 USE k5_iot_springboot;
